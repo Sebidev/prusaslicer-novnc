@@ -30,6 +30,7 @@ RUN apt update && apt install -y --no-install-recommends --allow-unauthenticated
 # Here's their Dockerfile for reference https://github.com/dmagyar/prusaslicer-vnc-docker/blob/main/Dockerfile.amd64
 WORKDIR /slic3r
 ADD get_latest_prusaslicer_release.sh /slic3r
+ADD prusaslicer-novnc-httpserver /slic3r
 
 RUN chmod +x /slic3r/get_latest_prusaslicer_release.sh \
   && latestSlic3r=$(/slic3r/get_latest_prusaslicer_release.sh url) \
