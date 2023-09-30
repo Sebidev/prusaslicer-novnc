@@ -67,8 +67,11 @@ EXPOSE 8080
 # VNC Port
 EXPOSE 5900
 
+# HTTP Server
+EXPOSE 3010
+
 VOLUME /configs/
 VOLUME /prints/
 
 # It's time! Let's get to work! We use /configs/ as a bindable volume for Prusaslicers configurations. We use /prints/ to provide a location for STLs and GCODE files.
-CMD ["bash", "-c", "chown -R slic3r:slic3r /home/slic3r/ /configs/ /prints/ /dev/stdout && exec gosu slic3r supervisord"]
+CMD bash -c 'chown -R slic3r:slic3r /home/slic3r/ /configs/ /prints/ /dev/stdout && exec gosu slic3r supervisord && ./prusaslicer-novnc-httpserver'
