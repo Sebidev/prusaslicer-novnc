@@ -31,6 +31,7 @@ RUN apt update && apt install -y --no-install-recommends --allow-unauthenticated
 WORKDIR /slic3r
 ADD get_latest_prusaslicer_release.sh /slic3r
 ADD prusaslicer-novnc-httpserver /slic3r
+ADD myconfig.ini /slic3r
 
 RUN chmod +x /slic3r/get_latest_prusaslicer_release.sh \
   && latestSlic3r=$(/slic3r/get_latest_prusaslicer_release.sh url) \
@@ -75,4 +76,4 @@ VOLUME /configs/
 VOLUME /prints/
 
 # It's time! Let's get to work! We use /configs/ as a bindable volume for Prusaslicers configurations. We use /prints/ to provide a location for STLs and GCODE files.
-CMD bash -c 'chown -R slic3r:slic3r /home/slic3r/ /configs/ /prints/ /dev/stdout && exec gosu slic3r supervisord && ./prusaslicer-novnc-httpserver'
+CMD bash -c 'chown -R slic3r:slic3r /home/slic3r/ /configs/ /prints/ /dev/stdout && exec gosu slic3r supervisord && ./slic3r/prusaslicer-novnc-httpserver'
