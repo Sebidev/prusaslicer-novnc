@@ -94,8 +94,6 @@ func main() {
 		} else {
 			c.String(http.StatusOK, "Vorgang erfolgreich gestartet, aber keine .gcode-Dateien gefunden")
 		}
-
-		c.String(http.StatusOK, "Vorgang erfolgreich gestartet")
 	})
 
 	r.Run(":3010")
