@@ -67,7 +67,7 @@ func main() {
 		// Assuming there's only one destination for simplicity. If multiple destinations are expected, you should loop over them.
 		trimmedDestination := destinations[0]
 		
-		files, err := ioutil.ReadDir(trimmedDestination)
+		files, err := ioutil.ReadDir("/"+trimmedDestination)
 		if err != nil {
 			c.String(http.StatusInternalServerError, fmt.Sprintf("Fehler beim Lesen des Upload-Ordners: %s", err))
 			fmt.Printf("Fehler beim Lesen des Upload-Ordners: %s", err)
