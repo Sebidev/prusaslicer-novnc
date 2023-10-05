@@ -66,9 +66,6 @@ func main() {
 			fmt.Printf("Fehler beim Lesen des Upload-Ordners: %s", err)
 			return
 		}
-
-		totalPrintTime := 0
-		totalWeight := 0
 		
 		for _, f := range files {
 			if strings.HasSuffix(f.Name(), ".gcode") {
