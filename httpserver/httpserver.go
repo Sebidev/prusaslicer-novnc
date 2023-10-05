@@ -96,7 +96,7 @@ func main() {
 		}
 
 		for _, trimmedDestination := range destinations {
-			err := os.RemoveAll(trimmedDestination)
+			err := os.RemoveAll("/" + trimmedDestination)
 			if err != nil {
 				fmt.Printf("Fehler beim Löschen von %s: %s\n", trimmedDestination, err)
 			} else {
