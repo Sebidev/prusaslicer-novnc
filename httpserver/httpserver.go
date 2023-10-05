@@ -65,22 +65,31 @@ func main() {
 			fmt.Printf("Fehler beim Lesen des Upload-Ordners: %s", err)
 			return
 		}
-		var totalPrintTime int    // Oder welchen Typ auch immer die parseFileName Funktion zurückgibt
-		var totalWeight int       // Oder welchen Typ auch immer die parseFileName Funktion zurückgibt
-		
+
 		for _, f := range files {
 			if strings.HasSuffix(f.Name(), ".gcode") {
-				printTime, weight := parseFileName(f.Name())
+				printTimeStr, weightStr := parseFileName(f.Name())
+		
+				// Konvertieren Sie die zurückgegebenen Strings in Ints (oder Floats, wenn nötig)
+				printTime, err1 := strconv.Atoi(printTimeStr)
+				weight, err2 := strconv.Atoi(weightStr)
+		
+				// Überprüfen Sie auf Konvertierungsfehler
+				if err1 != nil || err2 != nil {
+					c.String(http.StatusInternalServerError, "Fehler bei der Umwandlung von print_time oder total_weight in Zahlen")
+					return
+				}
+		
 				totalPrintTime += printTime
 				totalWeight += weight
 			}
 		}
 		
 		c.JSON(http.StatusOK, gin.H{
-			"total_print_time":   totalPrintTime,
+			"total_print_time": totalPrintTime,
 			"total_weight": totalWeight,
-		})		
-
+		})
+		
 		c.String(http.StatusOK, "Vorgang erfolgreich gestartet")
 	})
 
