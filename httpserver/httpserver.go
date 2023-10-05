@@ -85,6 +85,14 @@ func main() {
 				}
 			}
 		}
+
+		if len(results) > 0 {
+			c.JSON(http.StatusOK, gin.H{
+				"results": results,
+			})
+		} else {
+			c.String(http.StatusOK, "Vorgang erfolgreich gestartet, aber keine .gcode-Dateien gefunden")
+		}
 	})
 
 	r.Run(":3010")
