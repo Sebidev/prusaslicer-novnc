@@ -43,41 +43,43 @@ func main() {
 		}
 
 		// Starten Sie hier Ihr Backend-Programm als CLI-Befehl.
-		var stderr bytes.Buffer
-		cmd := exec.Command("/slic3r/slic3r-dist/prusa-slicer", "/"+requestData.Fullpfad, "--load", "/slic3r/myconfig.ini", "--export-gcode", "--export-3mf")
-		cmd.Stderr = &stderr
+		fullpaths := strings.Split(requestData.Fullpfad, ",")
 
-		err := cmd.Run()
-		if err != nil {
-			c.String(http.StatusInternalServerError, "Fehler beim Ausführen des prusa-slicer: %s, Fehlerausgabe: %s", err, stderr.String())
-			return
+		for _, fullpath := range fullpaths {
+			trimmedPath := strings.TrimSpace(fullpath) // Entfernen Sie jeglichen Leerraum um den Pfad herum.
+			
+			var stderr bytes.Buffer
+			cmd := exec.Command("/slic3r/slic3r-dist/prusa-slicer", "/"+trimmedPath, "--load", "/slic3r/myconfig.ini", "--export-gcode", "--export-3mf")
+			cmd.Stderr = &stderr
+		
+			err := cmd.Run()
+			if err != nil {
+				c.String(http.StatusInternalServerError, "Fehler beim Ausführen des prusa-slicer für Datei %s: %s, Fehlerausgabe: %s", trimmedPath, err, stderr.String())
+				return
+			}
 		}
 
-		files, err := ioutil.ReadDir("/" + requestData.Destination) // Annahme, dass der Ordner "uploads" im aktuellen Verzeichnis ist.
+		files, err := ioutil.ReadDir("/" + requestData.Destination) // Annahme, dass der Ordner "/uploads" im aktuellen Verzeichnis ist.
 		if err != nil {
 			c.String(http.StatusInternalServerError, "Fehler beim Lesen des Upload-Ordners: %s", err)
 			fmt.Printf("Fehler beim Lesen des Upload-Ordners: %s", err)
 			return
 		}
-
-		/* for _, f := range files {
-			if strings.HasSuffix(f.Name(), ".gcode") {
-				c.String(http.StatusOK, f.Name())
-				fmt.Printf(f.Name())
-				return
-			}
-		} */
-
+		var totalPrintTime int    // Oder welchen Typ auch immer die parseFileName Funktion zurückgibt
+		var totalWeight int       // Oder welchen Typ auch immer die parseFileName Funktion zurückgibt
+		
 		for _, f := range files {
 			if strings.HasSuffix(f.Name(), ".gcode") {
-				printTime, totalWeight := parseFileName(f.Name())
-				c.JSON(http.StatusOK, gin.H{
-					"print_time":   printTime,
-					"total_weight": totalWeight,
-				})
-				return
+				printTime, weight := parseFileName(f.Name())
+				totalPrintTime += printTime
+				totalWeight += weight
 			}
 		}
+		
+		c.JSON(http.StatusOK, gin.H{
+			"total_print_time":   totalPrintTime,
+			"total_weight": totalWeight,
+		})		
 
 		c.String(http.StatusOK, "Vorgang erfolgreich gestartet")
 	})
