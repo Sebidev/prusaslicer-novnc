@@ -66,6 +66,9 @@ func main() {
 			return
 		}
 
+		totalPrintTime := 0
+		totalWeight := 0
+		
 		for _, f := range files {
 			if strings.HasSuffix(f.Name(), ".gcode") {
 				printTimeStr, weightStr := parseFileName(f.Name())
@@ -89,7 +92,7 @@ func main() {
 			"total_print_time": totalPrintTime,
 			"total_weight": totalWeight,
 		})
-		
+
 		c.String(http.StatusOK, "Vorgang erfolgreich gestartet")
 	})
 
