@@ -59,9 +59,17 @@ func main() {
 			}
 		}
 
-		files, err := ioutil.ReadDir("/" + requestData.Destination) // Annahme, dass der Ordner "/uploads" im aktuellen Verzeichnis ist.
+		destinations := strings.Split(requestData.Destination, ",")
+		for i := range destinations {
+			destinations[i] = strings.TrimSpace(destinations[i])
+		}
+		
+		// Assuming there's only one destination for simplicity. If multiple destinations are expected, you should loop over them.
+		trimmedDestination := destinations[0]
+		
+		files, err := ioutil.ReadDir(trimmedDestination)
 		if err != nil {
-			c.String(http.StatusInternalServerError, "Fehler beim Lesen des Upload-Ordners: %s", err)
+			c.String(http.StatusInternalServerError, fmt.Sprintf("Fehler beim Lesen des Upload-Ordners: %s", err))
 			fmt.Printf("Fehler beim Lesen des Upload-Ordners: %s", err)
 			return
 		}
