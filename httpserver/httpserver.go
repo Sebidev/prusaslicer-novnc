@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os/exec"
 	"strings"
-
+	"os"
 	"github.com/gin-gonic/gin"
 )
 
