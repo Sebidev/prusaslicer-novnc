@@ -73,16 +73,26 @@ func main() {
 			fmt.Printf("Fehler beim Lesen des Upload-Ordners: %s", err)
 			return
 		}
+
+		var results []map[string]string
 		
 		for _, f := range files {
 			if strings.HasSuffix(f.Name(), ".gcode") {
 				printTime, totalWeight := parseFileName(f.Name())
-				c.JSON(http.StatusOK, gin.H{
+				result := map[string]string{
 					"print_time":   printTime,
 					"total_weight": totalWeight,
-				})
-				return
+				}
+				results = append(results, result)
 			}
+		}
+
+		if len(results) > 0 {
+			c.JSON(http.StatusOK, gin.H{
+				"results": results,
+			})
+		} else {
+			c.String(http.StatusOK, "Vorgang erfolgreich gestartet, aber keine .gcode-Dateien gefunden")
 		}
 
 		c.String(http.StatusOK, "Vorgang erfolgreich gestartet")
