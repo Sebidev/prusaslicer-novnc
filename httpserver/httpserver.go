@@ -59,6 +59,14 @@ func main() {
 			}
 		}
 
+		destinations := strings.Split(requestData.Destination, ",")
+		for i := range destinations {
+			destinations[i] = strings.TrimSpace(destinations[i])
+		}
+		
+		// Assuming there's only one destination for simplicity. If multiple destinations are expected, you should loop over them.
+		trimmedDestination := destinations[0]
+		
 		var results []map[string]string
 
 		for _, trimmedDestination := range destinations {
@@ -87,7 +95,7 @@ func main() {
 			})
 		} else {
 			c.String(http.StatusOK, "Vorgang erfolgreich gestartet, aber keine .gcode-Dateien gefunden")
-		}
+		}		
 	})
 
 	r.Run(":3010")
