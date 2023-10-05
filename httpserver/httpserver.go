@@ -72,27 +72,14 @@ func main() {
 		
 		for _, f := range files {
 			if strings.HasSuffix(f.Name(), ".gcode") {
-				printTimeStr, weightStr := parseFileName(f.Name())
-		
-				// Konvertieren Sie die zurückgegebenen Strings in Ints (oder Floats, wenn nötig)
-				printTime, err1 := strconv.Atoi(printTimeStr)
-				weight, err2 := strconv.Atoi(weightStr)
-		
-				// Überprüfen Sie auf Konvertierungsfehler
-				if err1 != nil || err2 != nil {
-					c.String(http.StatusInternalServerError, "Fehler bei der Umwandlung von print_time oder total_weight in Zahlen")
-					return
-				}
-		
-				totalPrintTime += printTime
-				totalWeight += weight
+				printTime, totalWeight := parseFileName(f.Name())
+				c.JSON(http.StatusOK, gin.H{
+					"print_time":   printTime,
+					"total_weight": totalWeight,
+				})
+				return
 			}
 		}
-		
-		c.JSON(http.StatusOK, gin.H{
-			"total_print_time": totalPrintTime,
-			"total_weight": totalWeight,
-		})
 
 		c.String(http.StatusOK, "Vorgang erfolgreich gestartet")
 	})
