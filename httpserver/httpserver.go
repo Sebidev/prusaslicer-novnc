@@ -64,9 +64,6 @@ func main() {
 			destinations[i] = strings.TrimSpace(destinations[i])
 		}
 		
-		// Assuming there's only one destination for simplicity. If multiple destinations are expected, you should loop over them.
-		trimmedDestination := destinations[0]
-		
 		var results []map[string]string
 
 		for _, trimmedDestination := range destinations {
@@ -87,14 +84,6 @@ func main() {
 					results = append(results, result)
 				}
 			}
-		}
-		
-		if len(results) > 0 {
-			c.JSON(http.StatusOK, gin.H{
-				"results": results,
-			})
-		} else {
-			c.String(http.StatusOK, "Vorgang erfolgreich gestartet, aber keine .gcode-Dateien gefunden")
 		}
 	})
 
