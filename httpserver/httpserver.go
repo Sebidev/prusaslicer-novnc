@@ -59,34 +59,28 @@ func main() {
 			}
 		}
 
-		destinations := strings.Split(requestData.Destination, ",")
-		for i := range destinations {
-			destinations[i] = strings.TrimSpace(destinations[i])
-		}
-		
-		// Assuming there's only one destination for simplicity. If multiple destinations are expected, you should loop over them.
-		trimmedDestination := destinations[0]
-		
-		files, err := ioutil.ReadDir("/"+trimmedDestination)
-		if err != nil {
-			c.String(http.StatusInternalServerError, fmt.Sprintf("Fehler beim Lesen des Upload-Ordners: %s", err))
-			fmt.Printf("Fehler beim Lesen des Upload-Ordners: %s", err)
-			return
-		}
-
 		var results []map[string]string
-		
-		for _, f := range files {
-			if strings.HasSuffix(f.Name(), ".gcode") {
-				printTime, totalWeight := parseFileName(f.Name())
-				result := map[string]string{
-					"print_time":   printTime,
-					"total_weight": totalWeight,
+
+		for _, trimmedDestination := range destinations {
+			files, err := ioutil.ReadDir("/" + trimmedDestination)
+			if err != nil {
+				c.String(http.StatusInternalServerError, fmt.Sprintf("Fehler beim Lesen des Upload-Ordners: %s", err))
+				fmt.Printf("Fehler beim Lesen des Upload-Ordners: %s", err)
+				return
+			}
+			
+			for _, f := range files {
+				if strings.HasSuffix(f.Name(), ".gcode") {
+					printTime, totalWeight := parseFileName(f.Name())
+					result := map[string]string{
+						"print_time":   printTime,
+						"total_weight": totalWeight,
+					}
+					results = append(results, result)
 				}
-				results = append(results, result)
 			}
 		}
-
+		
 		if len(results) > 0 {
 			c.JSON(http.StatusOK, gin.H{
 				"results": results,
