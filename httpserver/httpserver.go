@@ -13,6 +13,8 @@ import (
 )
 
 type SliceRequest struct {
+	Quality 	string `json:"quality"`
+    Filling 	string `json:"filling"`
 	Fullpfad    string `json:"fullpfad"`
 	Destination string `json:"destination"`
 }
@@ -28,11 +30,29 @@ func parseFileName(name string) (string, string) {
 	return printTime, totalWeight
 }
 
+func removeUpload(destinations []string)
+{
+	for _, trimmedDestination := range destinations {
+		err := os.RemoveAll("/" + trimmedDestination)
+		if err != nil {
+			fmt.Printf("Fehler beim Löschen von %s: %s\n", trimmedDestination, err)
+		} else {
+			fmt.Printf("Ordner %s wurde erfolgreich gelöscht\n", trimmedDestination)
+		}
+	}
+}
+
 func main() {
 	r := gin.Default()
 
 	r.POST("/startslice", func(c *gin.Context) {
 		var requestData SliceRequest
+
+		destinations := strings.Split(requestData.Destination, ",")
+		for i := range destinations {
+			destinations[i] = strings.TrimSpace(destinations[i])
+		}
+
 		if err := c.BindJSON(&requestData); err != nil {
 			c.String(http.StatusBadRequest, "Fehler beim Parsen von JSON: %s", err)
 			return
@@ -50,19 +70,15 @@ func main() {
 			trimmedPath := strings.TrimSpace(fullpath) // Entfernen Sie jeglichen Leerraum um den Pfad herum.
 			
 			var stderr bytes.Buffer
-			cmd := exec.Command("/slic3r/slic3r-dist/prusa-slicer", "/"+trimmedPath, "--load", "/slic3r/myconfig.ini", "--export-gcode", "--export-3mf")
+			cmd := exec.Command("/slic3r/slic3r-dist/prusa-slicer", "/"+trimmedPath, "--load", "/slic3r/configs/" + Quality + "_config.ini", "--infill-overlap="+Filling, "--export-gcode", "--export-3mf")
 			cmd.Stderr = &stderr
 		
 			err := cmd.Run()
 			if err != nil {
 				c.String(http.StatusInternalServerError, "Fehler beim Ausführen des prusa-slicer für Datei %s: %s, Fehlerausgabe: %s", trimmedPath, err, stderr.String())
+				removeUpload(destinations)
 				return
 			}
-		}
-
-		destinations := strings.Split(requestData.Destination, ",")
-		for i := range destinations {
-			destinations[i] = strings.TrimSpace(destinations[i])
 		}
 		
 		var results []map[string]string
@@ -82,7 +98,14 @@ func main() {
 						"print_time":   printTime,
 						"total_weight": totalWeight,
 					}
-					results = append(results, result)
+					results = append(resul		for _, trimmedDestination := range destinations {
+						err := os.RemoveAll("/" + trimmedDestination)
+						if err != nil {
+							fmt.Printf("Fehler beim Löschen von %s: %s\n", trimmedDestination, err)
+						} else {
+							fmt.Printf("Ordner %s wurde erfolgreich gelöscht\n", trimmedDestination)
+						}
+					}ts, result)
 				}
 			}
 		}
@@ -95,14 +118,7 @@ func main() {
 			c.String(http.StatusOK, "Vorgang erfolgreich gestartet, aber keine .gcode-Dateien gefunden")
 		}
 
-		for _, trimmedDestination := range destinations {
-			err := os.RemoveAll("/" + trimmedDestination)
-			if err != nil {
-				fmt.Printf("Fehler beim Löschen von %s: %s\n", trimmedDestination, err)
-			} else {
-				fmt.Printf("Ordner %s wurde erfolgreich gelöscht\n", trimmedDestination)
-			}
-		}
+		removeUpload(destinations)
 	})
 
 	r.Run(":3010")
