@@ -69,7 +69,7 @@ func main() {
 			trimmedPath := strings.TrimSpace(fullpath) // Entfernen Sie jeglichen Leerraum um den Pfad herum.
 
 			var stderr bytes.Buffer
-			cmd := exec.Command("/slic3r/slic3r-dist/prusa-slicer", "/"+trimmedPath, "--load", "/slic3r/configs/"+requestData.Quality+"_config.ini", "--infill-overlap="+requestData.Filling, "--export-gcode", "--export-3mf")
+			cmd := exec.Command("/slic3r/slic3r-dist/prusa-slicer", "/"+trimmedPath, "--load", "/slic3r/configs/"+requestData.Quality+"_config.ini", "--infill-overlap="+requestData.Filling, "--export-gcode")
 			cmd.Stderr = &stderr
 
 			err := cmd.Run()
