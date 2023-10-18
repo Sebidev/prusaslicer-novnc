@@ -57,7 +57,7 @@ func main() {
 			return
 		}
 
-		if requestData.Fullpfad == "" || requestData.Destination == "" {
+		if requestData.Quality == "" || requestData.Filling == "" || requestData.Fullpfad == "" || requestData.Destination == "" {
 			c.String(http.StatusBadRequest, "Fehlende Daten in der Anfrage")
 			return
 		}

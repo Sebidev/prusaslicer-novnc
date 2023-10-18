@@ -31,7 +31,6 @@ RUN apt update && apt install -y --no-install-recommends --allow-unauthenticated
 WORKDIR /slic3r
 ADD get_latest_prusaslicer_release.sh /slic3r
 ADD prusaslicer-novnc-httpserver /slic3r
-ADD myconfig.ini /slic3r
 ADD configs/ /slic3r/configs/
 
 RUN chmod +x /slic3r/get_latest_prusaslicer_release.sh \
