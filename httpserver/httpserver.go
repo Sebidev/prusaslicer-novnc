@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"os/exec"
 	"strings"
-	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
 type SliceRequest struct {
-	Quality 	string `json:"quality"`
-    Filling 	string `json:"filling"`
+	Quality     string `json:"quality"`
+	Filling     string `json:"filling"`
 	Fullpfad    string `json:"fullpfad"`
 	Destination string `json:"destination"`
 }
@@ -30,8 +30,7 @@ func parseFileName(name string) (string, string) {
 	return printTime, totalWeight
 }
 
-func removeUpload(destinations []string)
-{
+func removeUpload(destinations []string) {
 	for _, trimmedDestination := range destinations {
 		err := os.RemoveAll("/" + trimmedDestination)
 		if err != nil {
@@ -68,11 +67,11 @@ func main() {
 
 		for _, fullpath := range fullpaths {
 			trimmedPath := strings.TrimSpace(fullpath) // Entfernen Sie jeglichen Leerraum um den Pfad herum.
-			
+
 			var stderr bytes.Buffer
-			cmd := exec.Command("/slic3r/slic3r-dist/prusa-slicer", "/"+trimmedPath, "--load", "/slic3r/configs/" + Quality + "_config.ini", "--infill-overlap="+Filling, "--export-gcode", "--export-3mf")
+			cmd := exec.Command("/slic3r/slic3r-dist/prusa-slicer", "/"+trimmedPath, "--load", "/slic3r/configs/"+requestData.Quality+"_config.ini", "--infill-overlap="+requestData.Filling, "--export-gcode", "--export-3mf")
 			cmd.Stderr = &stderr
-		
+
 			err := cmd.Run()
 			if err != nil {
 				c.String(http.StatusInternalServerError, "Fehler beim Ausführen des prusa-slicer für Datei %s: %s, Fehlerausgabe: %s", trimmedPath, err, stderr.String())
@@ -80,7 +79,7 @@ func main() {
 				return
 			}
 		}
-		
+
 		var results []map[string]string
 
 		for _, trimmedDestination := range destinations {
@@ -90,7 +89,7 @@ func main() {
 				fmt.Printf("Fehler beim Lesen des Upload-Ordners: %s", err)
 				return
 			}
-			
+
 			for _, f := range files {
 				if strings.HasSuffix(f.Name(), ".gcode") {
 					printTime, totalWeight := parseFileName(f.Name())
@@ -98,14 +97,7 @@ func main() {
 						"print_time":   printTime,
 						"total_weight": totalWeight,
 					}
-					results = append(resul		for _, trimmedDestination := range destinations {
-						err := os.RemoveAll("/" + trimmedDestination)
-						if err != nil {
-							fmt.Printf("Fehler beim Löschen von %s: %s\n", trimmedDestination, err)
-						} else {
-							fmt.Printf("Ordner %s wurde erfolgreich gelöscht\n", trimmedDestination)
-						}
-					}ts, result)
+					results = append(results, result)
 				}
 			}
 		}
