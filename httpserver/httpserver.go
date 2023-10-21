@@ -33,6 +33,10 @@ func parseFileName(name string) (string, string) {
 func main() {
 	r := gin.Default()
 
+	r.GET("/", func(c *gin.Context) {
+		c.String(200, "ready")
+	})
+
 	r.POST("/startslice", func(c *gin.Context) {
 		var requestData SliceRequest
 
