@@ -60,9 +60,6 @@ func main() {
 			cmd := exec.Command("/slic3r/slic3r-dist/prusa-slicer", "/"+trimmedPath, "--load", "/slic3r/configs/"+requestData.Quality+"_config.ini", "--infill-overlap="+requestData.Filling, "--export-gcode")
 			cmd.Stderr = &stderr
 
-			cmdString := strings.Join(cmd.Args, " ")
-			fmt.Println(cmdString)
-
 			err := cmd.Run()
 			if err != nil {
 				c.String(http.StatusInternalServerError, "Fehler beim Ausführen des prusa-slicer für Datei %s: %s, Fehlerausgabe: %s", trimmedPath, err, stderr.String())
