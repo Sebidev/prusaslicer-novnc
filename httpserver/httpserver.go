@@ -34,7 +34,7 @@ func main() {
 	r := gin.Default()
 
 	r.GET("/", func(c *gin.Context) {
-		c.String(200, "ready")
+		c.String(200, "ready\n")
 	})
 
 	r.POST("/startslice", func(c *gin.Context) {
