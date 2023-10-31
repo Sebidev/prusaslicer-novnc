@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"os/exec"
 	"strings"
 
@@ -100,15 +99,6 @@ func main() {
 			})
 		} else {
 			c.String(http.StatusOK, "Vorgang erfolgreich gestartet, aber keine .gcode-Dateien gefunden")
-		}
-
-		for _, trimmedDestination := range destinations {
-			err := os.RemoveAll("/" + trimmedDestination)
-			if err != nil {
-				fmt.Printf("Fehler beim Löschen von %s: %s\n", trimmedDestination, err)
-			} else {
-				fmt.Printf("Ordner %s wurde erfolgreich gelöscht\n", trimmedDestination)
-			}
 		}
 	})
 
